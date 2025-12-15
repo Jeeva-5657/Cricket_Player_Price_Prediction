@@ -1,6 +1,7 @@
 import pandas as pd
 import streamlit as st
 from sklearn.linear_model import LinearRegression
+from sklearn.preprocessing import StandardScaler
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -42,33 +43,40 @@ def prediction_options_page():
         # Redirect to the selected page
         # This will refresh the page and show the updated state
 
-
 # Batting prediction page
 def batting_prediction_page():
     st.title("Batting Prediction")
 
     # Load the dataset
-    data = pd.read_csv(r"") #Enter the path for batting prediction csv
+    data = pd.read_csv(r"A:\MY_PROJECTS\Cricket Player Prediction\Cricket_Player_Price_Prediction\data\Batting_Records.csv") #Enter the path for batting prediction csv
     data.columns = data.columns.str.strip()  # Clean up column names
 
     if 'Players' not in data.columns or 'Image_URL' not in data.columns:
         st.error("The 'Players' or 'Image_URL' column is not found in the dataset.")
         return
 
-    # Fill missing values in the data
+    # Fill missing values in the dataset
     data.fillna(method='ffill', inplace=True)
 
     if 'SOLD PRICE' in data.columns:
         # Prepare features and target variable
-        X = data[['Runs', 'Strike_rate']]
+        X = data[[
+    'Matches',
+    'Innings',
+    'Runs',
+    'AVG',
+    'Strike_rate'
+]]
         y = data['SOLD PRICE']
+
+        scaler = StandardScaler()
+        X_scaled = scaler.fit_transform(X)
 
         # Train the model
         model = LinearRegression()
-        model.fit(X, y)
-
+        model.fit(X_scaled, y)
         # Predict prices for all players
-        data['Predicted Price'] = model.predict(X)
+        data['Predicted Price'] = model.predict(X_scaled)
 
         # Get the top 10 batsmen based on predicted price
         top_10_batsmen = data.nlargest(10, 'Predicted Price')
@@ -77,11 +85,13 @@ def batting_prediction_page():
         st.write("Top 10 Batsmen Full Stats:")
         st.dataframe(top_10_batsmen)
 
-        # Display individual images and predicted prices for each batsman
-        for i, row in top_10_batsmen.iterrows():
-            st.image(row['Image_URL'], caption=row['Players'], use_column_width=True)
-            st.write(f"**{row['Players']}** - Predicted Price: {row['Predicted Price']:.2f}")
-            st.write(f"Runs: {row['Runs']}, Strike Rate: {row['Strike_rate']}\n")
+        cols = st.columns(3)  # 3 images in a row
+        for idx, (i, row) in enumerate(top_10_batsmen.iterrows()):
+            with cols[idx % 3]:
+                st.image(row['Image_URL'], caption=row['Players'], width=150)
+                st.write(f"**Predicted Price**: ₹{row['Predicted Price']:.2f}")
+                st.write(f"Runs: {row['Runs']}")
+                st.write(f"Strike Rate: {row['Strike_rate']}\n")\
 
         # Add "Compare" button
         if st.button("Compare Top Batsmen"):
@@ -185,7 +195,7 @@ def bowling_prediction_page():
     st.title("Bowling Prediction")
 
     # Load the dataset
-    data = pd.read_csv(r" ") # Enter the path for the bowling data csv
+    data = pd.read_csv(r"A:\MY_PROJECTS\Cricket Player Prediction\Cricket_Player_Price_Prediction\data\Bowling_records.csv") # Enter the path for the bowling data csv
     data.columns = data.columns.str.strip()  # Clean up column names
 
     if 'Players' not in data.columns or 'Image_URL' not in data.columns:
@@ -197,15 +207,15 @@ def bowling_prediction_page():
 
     if 'SOLD PRICE' in data.columns:
         # Prepare features and target variable
-        X = data[['Wickets', 'Economy_Rate']]
+        X = data[['Matches', 'Innings', 'Wickets', 'Economy_Rate','Bowling_Average']]
         y = data['SOLD PRICE']
-
+        scaler = StandardScaler()
+        X_scaled = scaler.fit_transform(X)
         # Train the model
         model = LinearRegression()
-        model.fit(X, y)
-
+        model.fit(X_scaled, y)
         # Predict prices for all players
-        data['Predicted Price'] = model.predict(X)
+        data['Predicted Price'] = model.predict(X_scaled)
 
         # Get the top 10 bowlers based on predicted price
         top_10_bowlers = data.nlargest(10, 'Predicted Price')
@@ -215,12 +225,14 @@ def bowling_prediction_page():
         st.dataframe(top_10_bowlers)
 
         # Display individual images and predicted prices for each bowler
-        for i, row in top_10_bowlers.iterrows():
-            st.image(row['Image_URL'], caption=row['Players'], use_column_width=True)
-            st.write(f"**{row['Players']}** - Predicted Price: {row['Predicted Price']:.2f}")
-            st.write(f"Wickets: {row['Wickets']}, Economy Rate: {row['Economy_Rate']}\n")
-
-        # Add "Compare" button
+        cols = st.columns(5)  # 3 images in a row
+        for idx, (i, row) in enumerate(top_10_bowlers.iterrows()):
+            with cols[idx % 5]:
+                st.image(row['Image_URL'], caption=row['Players'], width=150)
+                st.write(f"Wickets: {row['Wickets']}")
+                st.write(f"Economy: {row['Economy_Rate']}")
+  
+        # Add "Compare" button and color red
         if st.button("Compare Top Bowlers"):
             st.session_state['current_page'] = "compare_bowlers"
             st.session_state['top_10_bowlers'] = top_10_bowlers
