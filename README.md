@@ -1,6 +1,8 @@
 # 🏏 IPL Player Price Prediction App
 
-Developed a Streamlit-based web application to predict IPL player prices using Linear Regression. Implemented data extraction from ESPN Cricinfo via BeautifulSoup for accurate, real-world statistics. The app enables graphical comparisons between players and identifies top-performing batsmen and bowlers based on performance metrics.
+Developed a Streamlit-based web application to predict IPL player prices using Linear Regression. Implemented data extraction from ESPN Cricinfo via BeautifulSoup for accurate, real-world statistics. The app enables graphical comparisons between players and identifies top-performing batsmen and bowlers based on performance metrics.<br>
+
+You can access the deployed app here:  [Cricket Player Price Prediction App](https://cricketplayerpriceprediction.streamlit.app/)
 
 ---
 
@@ -100,7 +102,6 @@ Password: password123
 ## 📈 Future Enhancements
 
 - ✅ Add All-Rounder Predictions
-- ✅ Deploy to Streamlit Cloud or Hugging Face Spaces
 - 🔜 Use more advanced ML algorithms (Random Forest, XGBoost)
 - 🔜 Add live data updates from ESPN
 - 🔜 Enhance UI with animations and charts
