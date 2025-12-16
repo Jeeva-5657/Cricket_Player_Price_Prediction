@@ -195,7 +195,7 @@ def bowling_prediction_page():
     st.title("Bowling Prediction")
 
     # Load the dataset
-    data = pd.read_csv("/data/Bowling_records.csv") # Enter the path for the bowling data csv
+    data = pd.read_csv("data/Bowling_records.csv") # Enter the path for the bowling data csv
     data.columns = data.columns.str.strip()  # Clean up column names
 
     if 'Players' not in data.columns or 'Image_URL' not in data.columns:
